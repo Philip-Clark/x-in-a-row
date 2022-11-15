@@ -43,20 +43,14 @@ li {
   aspect-ratio: 1/1;
   margin: 5%;
   text-align: center;
-  border: 0.3rem outset #3b3f43;
+  border: 1px solid #3b3f43;
   background-color: #303338;
   transition: background-color 0.1s ease-in-out;
-  /* box-shadow: #1b1e22 1px 2px 10px; */
   animation: none;
 }
 
 li:hover {
   background: var(--hoverColor);
-  border: 0.3rem inset #3b3f43;
-}
-
-li:not([value='']) {
-  border: 0px inset #3b3f43;
 }
 
 li[value='x'] {
