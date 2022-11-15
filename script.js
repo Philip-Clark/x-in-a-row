@@ -1,8 +1,11 @@
-let marker = 'x';
 let win = '';
 
-let winLength = 5;
-let size = 20;
+let debugsteps = 0;
+
+let winLength = 4;
+let size = 10;
+
+let debug = false;
 
 if (window.screen.width < 600) {
   size = 10;
@@ -11,6 +14,31 @@ if (window.screen.width < 400) {
   size = 5;
   winLength = 3;
 }
+
+const marker = (() => {
+  let mark = 'x';
+  const nextMarker = () => {
+    mark = mark == 'x' ? 'o' : 'x';
+    return mark;
+  };
+
+  const markerInverted = () => {
+    // return mark;
+    return mark == 'x' ? 'o' : 'x';
+  };
+
+  const getMark = () => mark;
+  const markIs = (inMark) => {
+    return mark == inMark;
+  };
+
+  return {
+    nextMarker,
+    markerInverted,
+    getMark,
+    markIs,
+  };
+})();
 
 const gameBoard = (() => {
   const buildGrid = () => {
@@ -73,27 +101,39 @@ const checker = (() => {
   const check = (x, y) => {
     const templateDirections = [
       { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 0, y: 1 },
-      { x: -1, y: 1 },
       { x: -1, y: 0 },
+      { x: 1, y: 1 },
       { x: -1, y: -1 },
+      { x: 0, y: 1 },
       { x: 0, y: -1 },
+      { x: -1, y: 1 },
       { x: 1, y: -1 },
     ];
 
     let directions = templateDirections;
+    let directionsOpposite = templateDirections;
 
     const invterval = setInterval(() => {
+      // getElementAtCoords(x, y).style.border = '1px solid #ffdd00';
       if (directions.length > 0 && win == '') {
-        const cell = getElementAtNextLocation(x, y, directions);
-        if (cell != undefined) {
-          if (cell.getAttribute('value') == (marker == 'x' ? 'o' : 'x')) {
-            cell.style.border = 'solid #00ff2fff 5px';
-            checkLine(x, y, directions, 1, { x: x, y: y });
-          }
-        }
+        let cell = getElementAtNextLocation(x, y, directions);
+        if (debug) cell.style.border = 'solid #ff00ccff 1px';
+        checkLine(x, y, directions, 1, { x: x, y: y });
         directions.shift();
+
+        cell = getElementAtNextLocation(x, y, directions);
+        if (debug) cell.style.border = 'solid #9900ffff 1px';
+        checkLine(x, y, directions, -1, { x: x, y: y });
+        directions.shift();
+
+        if (currentLine + 1 >= winLength) {
+          win = `${marker.markIs('x') ? 'Yellow' : 'Pink'} is the Winner`;
+          document.getElementById('winText').innerText = win; //! Remove later
+
+          return;
+        } else {
+          currentLine = 0;
+        }
       } else {
         clearInterval(invterval);
       }
@@ -104,44 +144,19 @@ const checker = (() => {
     const nextCell = getElementAtNextLocation(x, y, direction);
 
     if (nextCell != undefined) {
-      if (nextCell.getAttribute('value') == (marker == 'x' ? 'o' : 'x')) {
-        nextCell.style.border = 'solid #00ff2fff 5px';
+      if (nextCell.getAttribute('value') == marker.markerInverted()) {
+        debugsteps++;
+        if (debug)
+          nextCell.style.border = opposite == 1 ? 'solid #aeff00ff 2px' : 'solid #00d9ffff 2px';
         currentLine++;
-        if (currentLine >= winLength) {
-          win = `${marker == 'x' ? 'Yellow' : 'Pink'} is the Winner`;
-          document.getElementById('winText').innerText = win; //! Remove later
-
-          console.log(win);
-
-          return;
-        }
-        checkLine(
-          x + direction[0].x * opposite,
-          y + direction[0].y * opposite,
-          direction,
-          opposite,
-          original
-        );
+        checkLine(x + direction[0].x, y + direction[0].y, direction, opposite, original);
+        return true;
       }
-    }
-    if (opposite != -1) {
-      opposite = -1;
-      x = original.x;
-      y = original.y;
-      checkLine(
-        x + direction[0].x * opposite,
-        y + direction[0].y * opposite,
-        direction,
-        opposite,
-        original
-      );
-    } else {
-      currentLine = 0;
     }
   };
 
-  const getElementAtNextLocation = (x, y, directions) => {
-    return getElementAtCoords(x + directions[0].x, y + directions[0].y);
+  const getElementAtNextLocation = (xx, yy, directions) => {
+    return getElementAtCoords(xx + directions[0].x, yy + directions[0].y);
   };
 
   const getElementAtCoords = (x, y) => {
@@ -155,14 +170,15 @@ renderer.renderGameBoard(document.getElementById('board'), gameBoard);
 
 function markCell(rowId, cellId) {
   if (gameBoard.grid[rowId][cellId] == '' && win == '') {
-    gameBoard.grid[rowId][cellId] = marker;
-    marker = marker == 'x' ? 'o' : 'x';
+    gameBoard.grid[rowId][cellId] = marker.getMark();
+    marker.nextMarker();
 
     checker.check(cellId, rowId);
+
     document.documentElement.style.setProperty(
       '--hoverColor',
-      marker == 'o' ? '#ffd866' : '#ff6188'
+      marker.markIs('o') ? '#ffd866' : '#ff6188'
     );
-    renderer.renderGameBoard(document.getElementById('board'), gameBoard);
   }
+  renderer.renderGameBoard(document.getElementById('board'), gameBoard);
 }
