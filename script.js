@@ -113,31 +113,34 @@ const checker = (() => {
     let directions = templateDirections;
     let directionsOpposite = templateDirections;
 
-    const invterval = setInterval(() => {
-      // getElementAtCoords(x, y).style.border = '1px solid #ffdd00';
-      if (directions.length > 0 && win == '') {
-        let cell = getElementAtNextLocation(x, y, directions);
-        if (debug) cell.style.border = 'solid #ff00ccff 1px';
-        checkLine(x, y, directions, 1, { x: x, y: y });
-        directions.shift();
+    const invterval = setInterval(
+      () => {
+        // getElementAtCoords(x, y).style.border = '1px solid #ffdd00';
+        if (directions.length > 0 && win == '') {
+          let cell = getElementAtNextLocation(x, y, directions);
+          if (debug) cell.style.border = 'solid #ff00ccff 1px';
+          checkLine(x, y, directions, 1, { x: x, y: y });
+          directions.shift();
 
-        cell = getElementAtNextLocation(x, y, directions);
-        if (debug) cell.style.border = 'solid #9900ffff 1px';
-        checkLine(x, y, directions, -1, { x: x, y: y });
-        directions.shift();
+          cell = getElementAtNextLocation(x, y, directions);
+          if (debug) cell.style.border = 'solid #9900ffff 1px';
+          checkLine(x, y, directions, -1, { x: x, y: y });
+          directions.shift();
 
-        if (currentLine + 1 >= winLength) {
-          win = `${marker.markIs('x') ? 'Yellow' : 'Pink'} is the Winner`;
-          document.getElementById('winText').innerText = win; //! Remove later
+          if (currentLine + 1 >= winLength) {
+            win = `${marker.markIs('x') ? 'Yellow' : 'Pink'} is the Winner`;
+            document.getElementById('winText').innerText = win; //! Remove later
 
-          return;
+            return;
+          } else {
+            currentLine = 0;
+          }
         } else {
-          currentLine = 0;
+          clearInterval(invterval);
         }
-      } else {
-        clearInterval(invterval);
-      }
-    }, 0);
+      },
+      debug ? 200 : 0
+    );
   };
 
   const checkLine = (x, y, direction, opposite, original) => {
