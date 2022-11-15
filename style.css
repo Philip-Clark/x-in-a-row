@@ -10,11 +10,10 @@ ul {
 }
 
 #boardParent {
-  margin-top: 50vh;
+  margin-top: max(0px, calc(50vh - min(80vh, 95vw)));
   margin-right: auto;
   margin-left: auto;
-  transform: translateY(-50%);
-  max-width: 500px;
+  max-width: min(80vh, 95vw);
   display: flex;
   flex-direction: column;
 }

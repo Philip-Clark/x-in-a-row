@@ -1,12 +1,20 @@
 let marker = 'x';
 let win = '';
-const winLength = 8;
+
+let winLength = 5;
+let size = 20;
+
+if (window.screen.width < 600) {
+  size = 10;
+}
+if (window.screen.width < 400) {
+  size = 5;
+  winLength = 3;
+}
 
 const gameBoard = (() => {
-  const size = 20;
-
-  let rows = [];
   const buildGrid = () => {
+    let rows = [];
     for (let i = 0; i < size; i++) {
       let cells = [];
       for (let i = 0; i < size; i++) {
@@ -14,13 +22,20 @@ const gameBoard = (() => {
       }
       rows.push(cells);
     }
+    document.documentElement.style.setProperty('--size', size);
+
     return rows;
   };
 
-  const grid = buildGrid();
-  document.documentElement.style.setProperty('--size', size);
+  let grid = buildGrid();
+
+  const update = () => {
+    grid = buildGrid();
+  };
+
   return {
     grid,
+    update,
   };
 })();
 
@@ -28,7 +43,6 @@ const renderer = (() => {
   const renderRow = (row, rowId) => {
     let cells = [];
     let cellId = 0;
-
     row.forEach((cell) => {
       cells.push(
         `<li onclick="markCell(${rowId},${cellId})" value="${cell}" id='${rowId}-${cellId}' ></li>`
@@ -46,6 +60,7 @@ const renderer = (() => {
       rows.push(renderRow(element, rowId));
       rowId++;
     });
+    parent.innerHTML = '';
     parent.innerHTML = rows.join('');
   };
   return {
