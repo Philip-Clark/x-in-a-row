@@ -1,3 +1,7 @@
+const winLength = 5;
+let gameOver = false;
+let cellsLeft = 0;
+
 /**
  * A game board object
  * @param {int} size
@@ -9,8 +13,6 @@
  *
  */
 const gameBoard = (() => {
-  const winLength = 3;
-
   const buildGrid = (size, initialValue) => {
     let columns = [];
     for (let i = 0; i < size; i++) {
@@ -72,9 +74,9 @@ const checker = (() => {
     }
   };
 
-  const checkDirection = (origin, direction, value) => {
+  const checkDirection = (origin, direction, value, validate = true) => {
     let directionLineLength = 0;
-    if (gameBoard.getCellValue(origin.x, origin.y) == '') {
+    if ((gameBoard.getCellValue(origin.x, origin.y) == '') == validate) {
       directionLineLength += getLineLengthInDirection(origin, direction, value, 0);
       directionLineLength += getLineLengthInDirection(
         origin,
@@ -86,12 +88,12 @@ const checker = (() => {
     return directionLineLength;
   };
 
-  const checkDirections = (origin, value) => {
+  const checkDirections = (origin, value, validate) => {
     let lengths = [];
-    lengths.push(checkDirection(origin, { x: 1, y: 1 }, value));
-    lengths.push(checkDirection(origin, { x: 1, y: 0 }, value));
-    lengths.push(checkDirection(origin, { x: 1, y: -1 }, value));
-    lengths.push(checkDirection(origin, { x: 0, y: 1 }, value));
+    lengths.push(checkDirection(origin, { x: 1, y: 1 }, value, validate));
+    lengths.push(checkDirection(origin, { x: 1, y: 0 }, value, validate));
+    lengths.push(checkDirection(origin, { x: 1, y: -1 }, value, validate));
+    lengths.push(checkDirection(origin, { x: 0, y: 1 }, value, validate));
     lengths = lengths.sort();
     return lengths.pop();
   };
@@ -140,23 +142,38 @@ const marker = (() => {
 })();
 
 function playRound(x, y) {
-  play(x, y);
-
-  aiPlay();
+  if (marker.getMark() == 'x' && gameBoard.getCellValue(x, y) == '') {
+    play(x, y);
+    setTimeout(() => {
+      if (gameOver == false) {
+        aiPlay();
+      }
+    }, 900 + Math.random() * 1500);
+  }
 }
 
 function aiPlay() {
   let bestMove = { len: 0, x: 0, y: 0 };
-
+  let moves = [];
   gameBoard.forCell((cell) => {
     if (cell.value == '') {
-      let lineLength = checker.checkDirections({ x: cell.x, y: cell.y }, 'o') * buildWeight;
-      bestMove = lineLength > bestMove.len ? { len: lineLength, x: cell.x, y: cell.y } : bestMove;
-      lineLength = checker.checkDirections({ x: cell.x, y: cell.y }, 'x') * blockWeight;
-      bestMove = lineLength > bestMove.len ? { len: lineLength, x: cell.x, y: cell.y } : bestMove;
+      //   player = x ---  ai = 0
+      let moveWeight = checker.checkDirections({ x: cell.x, y: cell.y }, 'x');
+      moves.push(
+        moveWeight - 1 >= winLength
+          ? { len: 100000, x: cell.x, y: cell.y }
+          : { len: moveWeight, x: cell.x, y: cell.y }
+      );
+
+      moveWeight = checker.checkDirections({ x: cell.x, y: cell.y }, 'o');
+      moves.push(
+        moveWeight >= winLength
+          ? { len: 5000, x: cell.x, y: cell.y }
+          : { len: moveWeight, x: cell.x, y: cell.y }
+      );
     }
   });
-
+  bestMove = moves.sort((a, b) => (a.len > b.len ? 1 : -1)).pop();
   play(bestMove.x, bestMove.y);
 }
 
@@ -164,16 +181,23 @@ function play(x, y) {
   gameBoard.setCellValue(marker.getMark(), x, y);
   renderer.updateCell(gameBoard.getCellValue(x, y), x, y);
 
-  if (checker.checkDirections({ x: x, y: y }, marker.getMark()) > 5) {
+  cellsLeft--;
+
+  let line = checker.checkDirections({ x: x, y: y }, marker.getMark(), false);
+  if (line + 1 >= winLength) {
     console.log('WINNER', marker.getMark());
+    let winner = marker.getMark() == 'x' ? 'Player' : 'AI';
+    document.getElementById('text').innerHTML = `${winner} won the game!`;
+  } else if (cellsLeft == 0) {
+    document.getElementById('text').innerHTML = `Draw game!`;
+  } else {
+    marker.nextMarker();
+
+    document.documentElement.style.setProperty(
+      '--hoverColor',
+      marker.markIs('o') ? '#ff856600' : '#61b0ff'
+    );
   }
-
-  marker.nextMarker();
-
-  document.documentElement.style.setProperty(
-    '--hoverColor',
-    marker.markIs('o') ? '#ff8566' : '#61b0ff'
-  );
 }
 
 function reverseDirection({ x, y }) {
@@ -190,13 +214,16 @@ refresh(true);
 
 function refresh(rerender) {
   size = document.getElementById('boardSize').value;
-  buildWeight = document.getElementById('buildWeight').value;
-  blockWeight = document.getElementById('blockWeight').value;
+  // buildWeight = document.getElementById('buildWeight').value;
+  // blockWeight = document.getElementById('blockWeight').value;
 
   if (rerender) {
+    gameOver = false;
+
     document.getElementById('board').innerHTML = '';
     gameBoard.buildGrid(size, '');
     document.documentElement.style.setProperty('--size', size);
+    cellsLeft = size * size;
     gameBoard.forCell((cell) => {
       renderer.createCell(cell);
     });
