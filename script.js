@@ -152,6 +152,21 @@ function playRound(x, y) {
   }
 }
 
+function autoRound() {
+  refresh(true);
+  if (Math.floor(Math.random() * 10) > 5) {
+    console.log(marker.getMark());
+    marker.nextMarker();
+  }
+  const interval = setInterval(() => {
+    if (cellsLeft > 0) {
+      aiPlay();
+    } else {
+      clearInterval(interval);
+    }
+  }, 10);
+}
+
 function aiPlay() {
   let bestMove = { len: 0, x: 0, y: 0 };
   let moves = [];
