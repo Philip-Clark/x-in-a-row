@@ -146,9 +146,7 @@ function playRound(x, y) {
   if (marker.getMark() == 'x' && gameBoard.getCellValue(x, y) == '') {
     play(x, y);
     setTimeout(() => {
-      if (gameOver == false) {
-        aiPlay();
-      }
+      aiPlay();
     }, Math.random() * 1500);
   }
 }
@@ -179,25 +177,29 @@ function aiPlay() {
 }
 
 function play(x, y) {
-  gameBoard.setCellValue(marker.getMark(), x, y);
-  renderer.updateCell(gameBoard.getCellValue(x, y), x, y);
+  if (gameOver == false) {
+    gameBoard.setCellValue(marker.getMark(), x, y);
+    renderer.updateCell(gameBoard.getCellValue(x, y), x, y);
 
-  cellsLeft--;
+    cellsLeft--;
 
-  let line = checker.checkDirections({ x: x, y: y }, marker.getMark(), false);
-  if (line + 1 >= winLength) {
-    console.log('WINNER', marker.getMark());
-    let winner = marker.getMark() == 'x' ? 'Player' : 'AI';
-    document.getElementById('text').innerHTML = `${winner} won the game!`;
-  } else if (cellsLeft == 0) {
-    document.getElementById('text').innerHTML = `Draw game!`;
-  } else {
-    marker.nextMarker();
+    let line = checker.checkDirections({ x: x, y: y }, marker.getMark(), false);
+    if (line + 1 >= winLength) {
+      console.log('WINNER', marker.getMark());
+      gameOver = true;
+      let winner = marker.getMark() == 'x' ? 'Player' : 'AI';
+      document.getElementById('text').innerHTML = `${winner} won the game!`;
+    } else if (cellsLeft == 0) {
+      document.getElementById('text').innerHTML = `Draw game!`;
+      gameOver = true;
+    } else {
+      marker.nextMarker();
 
-    document.documentElement.style.setProperty(
-      '--hoverColor',
-      marker.markIs('o') ? '#ff856600' : '#61b0ff'
-    );
+      document.documentElement.style.setProperty(
+        '--hoverColor',
+        marker.markIs('o') ? '#ff856600' : '#61b0ff'
+      );
+    }
   }
 }
 
