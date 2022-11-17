@@ -60,7 +60,7 @@ const gameBoard = (() => {
 const checker = (() => {
   const getLineLengthInDirection = (origin, direction, value, length) => {
     let newOrigin = { x: origin.x + direction.x, y: origin.y + direction.y };
-    if (newOrigin.x > 0 && newOrigin.y > 0 && newOrigin.x < size && newOrigin.y < size) {
+    if (newOrigin.x >= 0 && newOrigin.y >= 0 && newOrigin.x < size && newOrigin.y < size) {
       if (
         gameBoard.getCellValue(newOrigin.x, newOrigin.y) == '' ||
         gameBoard.getCellValue(newOrigin.x, newOrigin.y) != value
@@ -75,7 +75,7 @@ const checker = (() => {
     }
   };
 
-  const checkDirection = (origin, direction, value, validate = true) => {
+  function checkDirection(origin, direction, value, validate = true) {
     let directionLineLength = 0;
     if ((gameBoard.getCellValue(origin.x, origin.y) == '') == validate) {
       directionLineLength += getLineLengthInDirection(origin, direction, value, 0);
@@ -87,7 +87,7 @@ const checker = (() => {
       );
     }
     return directionLineLength;
-  };
+  }
 
   const checkDirections = (origin, value, validate) => {
     let lengths = [];
@@ -96,6 +96,7 @@ const checker = (() => {
     lengths.push(checkDirection(origin, { x: 1, y: -1 }, value, validate));
     lengths.push(checkDirection(origin, { x: 0, y: 1 }, value, validate));
     lengths = lengths.sort();
+    // console.log(lengths[0]);
     return lengths.pop();
   };
 
@@ -147,7 +148,7 @@ function playRound(x, y) {
     play(x, y);
     setTimeout(() => {
       aiPlay();
-    }, Math.random() * 1500);
+    }, Math.random() * 200);
   }
 }
 
@@ -186,7 +187,6 @@ function play(x, y) {
     let line = checker.checkDirections({ x: x, y: y }, marker.getMark(), false);
 
     if (line + 1 >= winLength) {
-      console.log('WINNER', marker.getMark());
       gameOver = true;
       let winner = marker.getMark() == 'x' ? 'Player' : 'AI';
       document.getElementById('text').innerHTML = `${winner} won the game!`;
@@ -208,19 +208,11 @@ function reverseDirection({ x, y }) {
   return { x: x * -1, y: y * -1 };
 }
 
-////////////////////////////////////////////////////////////////
-// let size = 4;
-// let buildWeight = 1.1;
-// let blockWeight = 1;
 gameBoard.buildGrid(size, '');
 
 refresh(true);
 
 function refresh(rerender) {
-  // size = document.getElementById('boardSize').value;
-  // buildWeight = document.getElementById('buildWeight').value;
-  // blockWeight = document.getElementById('blockWeight').value;
-
   if (rerender) {
     gameOver = false;
 
