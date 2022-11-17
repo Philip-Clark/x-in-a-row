@@ -175,15 +175,15 @@ function aiPlay() {
       //   player = x ---  ai = 0
       let moveWeight = checker.checkDirections({ x: cell.x, y: cell.y }, 'x');
       moves.push(
-        moveWeight - 1 >= winLength
-          ? { len: 100000, x: cell.x, y: cell.y }
+        moveWeight + 2 >= winLength
+          ? { len: 500, x: cell.x, y: cell.y }
           : { len: moveWeight, x: cell.x, y: cell.y }
       );
 
       moveWeight = checker.checkDirections({ x: cell.x, y: cell.y }, 'o');
       moves.push(
-        moveWeight >= winLength
-          ? { len: 5000, x: cell.x, y: cell.y }
+        moveWeight + 1 >= winLength
+          ? { len: 100000, x: cell.x, y: cell.y }
           : { len: moveWeight, x: cell.x, y: cell.y }
       );
     }
