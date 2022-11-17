@@ -19,6 +19,12 @@ ul {
   flex-direction: column;
 }
 
+#version {
+  position: absolute;
+  margin: 0;
+  bottom: 0;
+}
+
 #text {
   width: 100%;
   text-align: center;
