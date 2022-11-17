@@ -11,7 +11,16 @@
   </head>
   <body>
     <div id="boardParent">
-      <h1 id="winText">4 IN A ROW</h1>
+      <div>
+        <h1 id="winText">4 IN A ROW</h1>
+        <label>Build Weight</label>
+        <input type="range" min="0" value="1.1" max="100" id="buildWeight" />
+        <label>Block Weight</label>
+        <input type="range" min="0" value="1.1" max="100" id="blockWeight" />
+        <label>Board Size</label>
+        <input type="range" min="2" value="5" max="50" id="boardSize" />
+        <button onclick="refresh()">Refresh board</button>
+      </div>
 
       <div id="board"></div>
     </div>

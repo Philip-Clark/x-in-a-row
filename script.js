@@ -150,9 +150,9 @@ function aiPlay() {
 
   gameBoard.forCell((cell) => {
     if (cell.value == '') {
-      let lineLength = checker.checkDirections({ x: cell.x, y: cell.y }, 'o');
+      let lineLength = checker.checkDirections({ x: cell.x, y: cell.y }, 'o') * buildWeight;
       bestMove = lineLength > bestMove.len ? { len: lineLength, x: cell.x, y: cell.y } : bestMove;
-      lineLength = checker.checkDirections({ x: cell.x, y: cell.y }, 'x');
+      lineLength = checker.checkDirections({ x: cell.x, y: cell.y }, 'x') * blockWeight;
       bestMove = lineLength > bestMove.len ? { len: lineLength, x: cell.x, y: cell.y } : bestMove;
     }
   });
@@ -181,8 +181,23 @@ function reverseDirection({ x, y }) {
 }
 
 ////////////////////////////////////////////////////////////////
-const size = 10;
+let size = 4;
+let buildWeight = 1.1;
+let blockWeight = 1;
 gameBoard.buildGrid(size, '');
+
+function refresh() {
+  size = document.getElementById('boardSize').value;
+  buildWeight = document.getElementById('buildWeight').value;
+  blockWeight = document.getElementById('blockWeight').value;
+  document.getElementById('board').innerHTML = '';
+  gameBoard.buildGrid(size, '');
+  document.documentElement.style.setProperty('--size', size);
+  gameBoard.forCell((cell) => {
+    renderer.createCell(cell);
+  });
+}
+
 document.documentElement.style.setProperty('--size', size);
 gameBoard.forCell((cell) => {
   renderer.createCell(cell);
