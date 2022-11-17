@@ -186,19 +186,19 @@ let buildWeight = 1.1;
 let blockWeight = 1;
 gameBoard.buildGrid(size, '');
 
-function refresh() {
+refresh(true);
+
+function refresh(rerender) {
   size = document.getElementById('boardSize').value;
   buildWeight = document.getElementById('buildWeight').value;
   blockWeight = document.getElementById('blockWeight').value;
-  document.getElementById('board').innerHTML = '';
-  gameBoard.buildGrid(size, '');
-  document.documentElement.style.setProperty('--size', size);
-  gameBoard.forCell((cell) => {
-    renderer.createCell(cell);
-  });
-}
 
-document.documentElement.style.setProperty('--size', size);
-gameBoard.forCell((cell) => {
-  renderer.createCell(cell);
-});
+  if (rerender) {
+    document.getElementById('board').innerHTML = '';
+    gameBoard.buildGrid(size, '');
+    document.documentElement.style.setProperty('--size', size);
+    gameBoard.forCell((cell) => {
+      renderer.createCell(cell);
+    });
+  }
+}

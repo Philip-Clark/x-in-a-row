@@ -14,12 +14,28 @@
       <div>
         <h1 id="winText">4 IN A ROW</h1>
         <label>Build Weight</label>
-        <input type="range" min="0" value="1.1" max="100" id="buildWeight" />
+        <input
+          type="range"
+          min="0"
+          value="3"
+          step="1"
+          max="10"
+          id="buildWeight"
+          oninput="refresh(false)"
+        />
         <label>Block Weight</label>
-        <input type="range" min="0" value="1.1" max="100" id="blockWeight" />
+        <input type="range" min="0" value="1" max="10" id="blockWeight" oninput="refresh(false)" />
         <label>Board Size</label>
-        <input type="range" min="2" value="5" max="50" id="boardSize" />
-        <button onclick="refresh()">Refresh board</button>
+        <input
+          type="range"
+          min="2"
+          value="10"
+          step="1"
+          max="50"
+          id="boardSize"
+          oninput="refresh(true)"
+        />
+        <button onclick="refresh(true)">Refresh board</button>
       </div>
 
       <div id="board"></div>
