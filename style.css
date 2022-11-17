@@ -1,6 +1,7 @@
 .body,
 html,
 ul {
+  color: white;
   margin: 0;
   padding: 0;
   background-color: #2a2d33;
