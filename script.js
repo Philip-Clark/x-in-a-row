@@ -177,13 +177,14 @@ function aiPlay() {
 }
 
 function play(x, y) {
-  if (gameOver == false) {
+  if (!gameOver) {
     gameBoard.setCellValue(marker.getMark(), x, y);
     renderer.updateCell(gameBoard.getCellValue(x, y), x, y);
 
     cellsLeft--;
 
     let line = checker.checkDirections({ x: x, y: y }, marker.getMark(), false);
+
     if (line + 1 >= winLength) {
       console.log('WINNER', marker.getMark());
       gameOver = true;
