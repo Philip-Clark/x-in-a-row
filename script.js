@@ -211,7 +211,7 @@ function play(x, y) {
       document.getElementById('text').innerHTML = `${winner} won the game!`;
       setTimeout(() => {
         refresh(true);
-      }, 200);
+      }, 2000);
     } else if (cellsLeft == 0) {
       document.getElementById('text').innerHTML = `Draw game!`;
       gameOver = true;
