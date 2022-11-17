@@ -147,7 +147,9 @@ function playRound(x, y) {
   if (marker.getMark() == 'x' && gameBoard.getCellValue(x, y) == '') {
     play(x, y);
     setTimeout(() => {
-      aiPlay();
+      if (!gameOver) {
+        aiPlay();
+      }
     }, Math.random() * 200);
   }
 }
@@ -167,28 +169,30 @@ function autoRound() {
   }, 10);
 }
 
-function aiPlay() {
-  let bestMove = { len: 0, x: 0, y: 0 };
-  let moves = [];
+function aiPlay(x = 0, y = 0, len = 0) {
+  let bestMove = { len: len, x: x, y: y };
+  let moves = [bestMove];
   gameBoard.forCell((cell) => {
     if (cell.value == '') {
       //   player = x ---  ai = 0
-      let moveWeight = checker.checkDirections({ x: cell.x, y: cell.y }, 'x');
-      moves.push(
-        moveWeight + 2 >= winLength
-          ? { len: 500, x: cell.x, y: cell.y }
-          : { len: moveWeight, x: cell.x, y: cell.y }
-      );
+      let longestLineForMove = checker.checkDirections({ x: cell.x, y: cell.y }, 'x');
+      let weightOfLine =
+        longestLineForMove + 3 >= winLength ? longestLineForMove * 1000 : longestLineForMove;
 
-      moveWeight = checker.checkDirections({ x: cell.x, y: cell.y }, 'o');
-      moves.push(
-        moveWeight + 1 >= winLength
-          ? { len: 100000, x: cell.x, y: cell.y }
-          : { len: moveWeight, x: cell.x, y: cell.y }
-      );
+      let moveWeight = weightOfLine;
+
+      longestLineForMove = checker.checkDirections({ x: cell.x, y: cell.y }, 'o');
+      weightOfLine =
+        longestLineForMove + 1 >= winLength ? longestLineForMove * 10000 : longestLineForMove;
+
+      moveWeight += weightOfLine;
+
+      moves.push({ len: moveWeight, x: cell.x, y: cell.y });
     }
   });
   bestMove = moves.sort((a, b) => (a.len > b.len ? 1 : -1)).pop();
+  console.log(bestMove);
+
   play(bestMove.x, bestMove.y);
 }
 
@@ -205,9 +209,15 @@ function play(x, y) {
       gameOver = true;
       let winner = marker.getMark() == 'x' ? 'Player' : 'AI';
       document.getElementById('text').innerHTML = `${winner} won the game!`;
+      setTimeout(() => {
+        refresh(true);
+      }, 200);
     } else if (cellsLeft == 0) {
       document.getElementById('text').innerHTML = `Draw game!`;
       gameOver = true;
+      setTimeout(() => {
+        refresh(true);
+      }, 2000);
     } else {
       marker.nextMarker();
 
@@ -230,6 +240,7 @@ refresh(true);
 function refresh(rerender) {
   if (rerender) {
     gameOver = false;
+    document.getElementById('text').innerHTML = `5 In a Row`;
 
     document.getElementById('board').innerHTML = '';
     gameBoard.buildGrid(size, '');
@@ -238,5 +249,8 @@ function refresh(rerender) {
     gameBoard.forCell((cell) => {
       renderer.createCell(cell);
     });
+    if (marker.getMark() == 'o') {
+      aiPlay(Math.floor(Math.random() * size), Math.floor(Math.random() * size), 100);
+    }
   }
 }
