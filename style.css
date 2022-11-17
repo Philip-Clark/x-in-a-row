@@ -6,7 +6,7 @@ ul {
   background-color: #2a2d33;
 }
 :root {
-  --hoverColor: #ff6188;
+  --hoverColor: #61b0ff;
 }
 
 #boardParent {
@@ -18,12 +18,7 @@ ul {
   flex-direction: column;
 }
 
-#board {
-  display: grid;
-  grid-template-rows: repeat(var(--size), 1fr);
-  gap: 0px;
-}
-#winText {
+Text {
   width: 100%;
   text-align: center;
   margin-bottom: 2rem;
@@ -31,15 +26,15 @@ ul {
   font-size: 3rem;
 }
 
-ul {
+#board {
   display: grid;
   grid-template-columns: repeat(var(--size), 1fr);
+  grid-template-rows: repeat(var(--size), 1fr);
   align-content: center;
-  list-style: none;
   gap: 0px;
 }
 
-li {
+.cell {
   aspect-ratio: 1/1;
   margin: 5%;
   text-align: center;
@@ -49,17 +44,17 @@ li {
   animation: none;
 }
 
-li:hover {
+.cell:hover {
   background: var(--hoverColor);
 }
 
-li[value='x'] {
-  background: radial-gradient(white, #ff6188);
+.cell[value='x'] {
+  background: radial-gradient(white, #61b0ff);
   z-index: 10;
-  box-shadow: #ff6188 0 0 30px;
+  box-shadow: #61b0ff 0 0 30px;
 }
-li[value='o'] {
-  background: radial-gradient(white, #ffd866);
+.cell[value='o'] {
+  background: radial-gradient(white, #ff8566);
   z-index: 10;
-  box-shadow: #ffd866 0 0 30px;
+  box-shadow: #ff8566 0 0 30px;
 }
