@@ -1,7 +1,35 @@
-const winLength = 5;
+let winLength = 5;
 let gameOver = false;
 let cellsLeft = 0;
-const size = 10;
+let size = 10;
+let blockFactor = 3;
+let buildFactor = 1;
+let resetLength = 2000;
+let aiThinkTime = 200;
+
+function help() {
+  console.log(
+    `
+  Hello intrepid explorer. This function has been added to help brave ones modify the game.
+
+  variables:
+     size = 10         |  Size of the game board along one edge
+     gameOver = false  |  Boolean storing the games state
+     winLength = 5     | How long a line must be to win
+     blockFactor = 3   | If the an human's line + 3 will win, block that line
+     buildFactor = 1   | If an AI's line + 1 will win, complete that line
+     resetLength = 2000| How long to wait to reset the game on win
+     aiThinkTime = 200 | The max time the ai will "think"
+
+
+
+  Functions:
+     refresh(rerender)        | Refresh the board and rerender it if desired, Must be called after board changing actions
+     autoRound(60,logTime=false)   | Lets 2 ai battle it out with 60ms between each play, and logs time if set.
+
+  `
+  );
+}
 
 /**
  * A game board object
@@ -150,23 +178,29 @@ function playRound(x, y) {
       if (!gameOver) {
         aiPlay();
       }
-    }, Math.random() * 200);
+    }, Math.random() * aiThinkTime);
   }
 }
 
-function autoRound() {
+function autoRound(time = 60, logTime = false) {
   refresh(true);
   if (Math.floor(Math.random() * 10) > 5) {
     console.log(marker.getMark());
     marker.nextMarker();
   }
   const interval = setInterval(() => {
-    if (cellsLeft > 0) {
+    if (cellsLeft > 0 && !gameOver) {
+      if (logTime) console.time('T');
+
       aiPlay();
+      if (logTime) {
+        console.timeLog('T');
+        console.timeEnd('T');
+      }
     } else {
       clearInterval(interval);
     }
-  }, 10);
+  }, time);
 }
 
 function aiPlay(x = 0, y = 0, len = 0) {
@@ -177,13 +211,17 @@ function aiPlay(x = 0, y = 0, len = 0) {
       //   player = x ---  ai = 0
       let longestLineForMove = checker.checkDirections({ x: cell.x, y: cell.y }, 'x');
       let weightOfLine =
-        longestLineForMove + 3 >= winLength ? longestLineForMove * 1000 : longestLineForMove;
+        longestLineForMove + blockFactor >= winLength
+          ? longestLineForMove * 1000
+          : longestLineForMove;
 
       let moveWeight = weightOfLine;
 
       longestLineForMove = checker.checkDirections({ x: cell.x, y: cell.y }, 'o');
       weightOfLine =
-        longestLineForMove + 1 >= winLength ? longestLineForMove * 10000 : longestLineForMove;
+        longestLineForMove + buildFactor >= winLength
+          ? longestLineForMove * 10000
+          : longestLineForMove;
 
       moveWeight += weightOfLine;
 
@@ -210,13 +248,13 @@ function play(x, y) {
       document.getElementById('text').innerHTML = `${winner} won the game!`;
       setTimeout(() => {
         refresh(true);
-      }, 2000);
+      }, resetLength);
     } else if (cellsLeft == 0) {
       document.getElementById('text').innerHTML = `Draw game!`;
       gameOver = true;
       setTimeout(() => {
         refresh(true);
-      }, 2000);
+      }, resetLength);
     } else {
       marker.nextMarker();
 
