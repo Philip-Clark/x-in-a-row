@@ -6,6 +6,7 @@ ul {
   padding: 0;
   background-color: #2a2d33;
 }
+
 :root {
   --hoverColor: #61b0ff;
 }
@@ -48,21 +49,40 @@ ul {
   text-align: center;
   border: 1px solid #3b3f43;
   background-color: #303338;
-  transition: background-color 0.1s ease-in-out;
+  transition: all 10s cubic-bezier(0.68, 2.02, 0.57, 0.73);
+  transition: background 3s;
+  transition: border 0.5s cubic-bezier(0.68, 2.02, 0.57, 0.73);
+
   animation: none;
+  transform: scale(1);
+  z-index: 0;
 }
 
 .cell:hover {
-  background: var(--hoverColor);
+  /* background: var(--hoverColor); */
+  transition: border 0.2s cubic-bezier(0.68, 2.02, 0.57, 0.73);
+  border: dashed #61b0ff 10px;
+}
+.cell:active {
+  transform: scale(1.2);
 }
 
 .cell[value='x'] {
   background: radial-gradient(white, #61b0ff);
+  transition: all 0.2s cubic-bezier(0.68, 2.02, 0.57, 0.73);
+  transform: scale(1);
+
+  border-color: rgba(0, 0, 0, 0.39);
+
   z-index: 10;
   box-shadow: #61b0ff 0 0 30px;
 }
 .cell[value='o'] {
   background: radial-gradient(white, #ff8566);
+  transition: all 0.2s cubic-bezier(0.68, 2.02, 0.57, 0.73);
+
+  border-color: rgba(0, 0, 0, 0.39);
+
   z-index: 10;
   box-shadow: #ff8566 0 0 30px;
 }
