@@ -1,6 +1,7 @@
 const winLength = 5;
 let gameOver = false;
 let cellsLeft = 0;
+const size = 10;
 
 /**
  * A game board object
@@ -148,7 +149,7 @@ function playRound(x, y) {
       if (gameOver == false) {
         aiPlay();
       }
-    }, 900 + Math.random() * 1500);
+    }, Math.random() * 1500);
   }
 }
 
@@ -205,15 +206,15 @@ function reverseDirection({ x, y }) {
 }
 
 ////////////////////////////////////////////////////////////////
-let size = 4;
-let buildWeight = 1.1;
-let blockWeight = 1;
+// let size = 4;
+// let buildWeight = 1.1;
+// let blockWeight = 1;
 gameBoard.buildGrid(size, '');
 
 refresh(true);
 
 function refresh(rerender) {
-  size = document.getElementById('boardSize').value;
+  // size = document.getElementById('boardSize').value;
   // buildWeight = document.getElementById('buildWeight').value;
   // blockWeight = document.getElementById('blockWeight').value;
 

@@ -19,12 +19,13 @@ ul {
   flex-direction: column;
 }
 
-Text {
+#text {
   width: 100%;
   text-align: center;
   margin-bottom: 2rem;
   color: white;
   font-size: 3rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 #board {
