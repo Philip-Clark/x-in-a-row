@@ -191,7 +191,6 @@ function aiPlay(x = 0, y = 0, len = 0) {
     }
   });
   bestMove = moves.sort((a, b) => (a.len > b.len ? 1 : -1)).pop();
-  console.log(bestMove);
 
   play(bestMove.x, bestMove.y);
 }
