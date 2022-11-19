@@ -86,3 +86,12 @@ ul {
   z-index: 10;
   box-shadow: #ff8566 0 0 30px;
 }
+
+.cell.dim {
+  transition: all 0.5s 0.5s ease-in-out;
+  border-color: rgba(0, 0, 0, 0.39);
+
+  box-shadow: none;
+
+  opacity: 0.2;
+}
