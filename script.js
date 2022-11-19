@@ -4,7 +4,7 @@ let cellsLeft = 0;
 let size = 10;
 let blockFactor = 3;
 let buildFactor = 1;
-let resetLength = 2000;
+let resetLength = 5000;
 let aiThinkTime = 200;
 
 function help() {
@@ -13,18 +13,18 @@ function help() {
   Hello intrepid explorer. This function has been added to help brave ones modify the game.
 
   variables:
-     size = 10         |  Size of the game board along one edge
-     gameOver = false  |  Boolean storing the games state
-     winLength = 5     | How long a line must be to win
-     blockFactor = 3   | If the an human's line + 3 will win, block that line
-     buildFactor = 1   | If an AI's line + 1 will win, complete that line
-     resetLength = 2000| How long to wait to reset the game on win
-     aiThinkTime = 200 | The max time the ai will "think"
+     size = 10            |  Size of the game board along one edge
+     gameOver = false     |  Boolean storing the games state
+     winLength = 5        | How long a line must be to win
+     blockFactor = 3      | If the an human's line + 3 will win, block that line
+     buildFactor = 1      | If an AI's line + 1 will win, complete that line
+     resetLength = 2000   | How long to wait to reset the game on win
+     aiThinkTime = 200    | The max time the ai will "think"
 
 
 
   Functions:
-     refresh(rerender)        | Refresh the board and rerender it if desired, Must be called after board changing actions
+     refresh(rerender)             | Refresh the board and rerender it if desired, Must be called after board changing actions
      autoRound(60,logTime=false)   | Lets 2 ai battle it out with 60ms between each play, and logs time if set.
 
   `
@@ -131,17 +131,24 @@ const checker = (() => {
   return { checkDirection, checkDirections };
 })();
 
+const createElement = (HTML) =>
+  document.createRange().createContextualFragment(HTML).firstElementChild;
+
 const renderer = (() => {
   const buildCell = ({ value, x, y }) => {
-    return `<div onclick="playRound(${x},${y})" value="${value}" id='${x}-${y}' class="cell"></div>`;
+    const cell = createElement(
+      `<div onclick="playRound(${x},${y})" value="${value}" id='${x}-${y}' class="cell"></div>`
+    );
+    return cell;
   };
 
   const createCell = ({ value, x, y }) => {
-    document.getElementById(`board`).insertAdjacentHTML('beforeend', buildCell({ value, x, y }));
+    document.getElementById(`board`).appendChild(buildCell({ value, x, y }));
   };
 
   const updateCell = (value, x, y) => {
     document.getElementById(`${x}-${y}`).setAttribute('value', value);
+    document.getElementById(`${x}-${y}`).classList.add(value);
   };
   return { createCell, updateCell };
 })();
@@ -188,6 +195,7 @@ function autoRound(time = 60, logTime = false) {
     console.log(marker.getMark());
     marker.nextMarker();
   }
+
   const interval = setInterval(() => {
     if (cellsLeft > 0 && !gameOver) {
       if (logTime) console.time('T');
@@ -245,6 +253,25 @@ function play(x, y) {
     if (line + 1 >= winLength) {
       gameOver = true;
       let winner = marker.getMark() == 'x' ? 'Player' : 'AI';
+
+      [...document.getElementsByClassName('cell')].forEach((cell) => {
+        if (cell.classList.contains(marker.markerInverted())) {
+          cell.classList.add('dim');
+        } else {
+          let coords = cell.id.split('-');
+          if (
+            checker.checkDirections(
+              { x: parseInt(coords[0]), y: parseInt(coords[1]) },
+              marker.getMark(),
+              false
+            ) +
+              1 <
+            winLength
+          ) {
+            cell.classList.add('dim');
+          }
+        }
+      });
       document.getElementById('text').innerHTML = `${winner} won the game!`;
       setTimeout(() => {
         refresh(true);
